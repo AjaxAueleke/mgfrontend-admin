@@ -12,8 +12,7 @@ import {
   textDecoration,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { Rating } from "../../pages/doctor/[id]";
-import { IDoctor } from "../../pages/patient";
+import { IDoctor } from "../../pages/doctor";
 
 export interface IDoctorCard {
   doctor: IDoctor;
@@ -66,7 +65,6 @@ export default function DoctorCard(props: IDoctorCard) {
 
         <Stack direction={"row"} justify={"center"} spacing={6}>
           <Stack spacing={0} align={"center"}>
-            <Rating rating={doctor?.rating ? doctor?.rating : 0} />
             <Text
               fontSize={"sm"}
               color={"gray.500"}

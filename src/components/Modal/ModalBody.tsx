@@ -1,7 +1,7 @@
 import { Box, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { IDoctor } from "../../pages/patient";
-import { ISchedule } from "../../pages/patient";
+import { IDoctor } from "../../pages/doctor";
+import { ISchedule } from "../../pages/doctor";
 
 export interface IAppointmentModalBody {
   doctor: IDoctor | null;
@@ -43,13 +43,13 @@ export default function AppointmentModalBody({
                     cursor: "pointer",
                     boxShadow: "md",
                     transform: "scale(1.1)",
-                    color : "white",
-                    transition : "all 0.2s ease-in-out"
+                    color: "white",
+                    transition: "all 0.2s ease-in-out",
                   }}
                   sx={{
                     "&:hover a": {
                       color: "white",
-                    }
+                    },
                   }}
                   color={
                     selectedSlot?.scheduleid == schedule.scheduleid

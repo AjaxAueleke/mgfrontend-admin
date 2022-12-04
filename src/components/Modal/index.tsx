@@ -9,7 +9,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { IDoctor } from "../../pages/patient";
+import { IDoctor } from "../../pages/doctor";
 import AppointmentModalBody from "./ModalBody";
 
 export interface ISchedueleModal {

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
-import { IDoctor } from "../pages/patient";
+import { IDoctor } from "../pages/doctor";
 
 export interface DoctorsState {
   doctors: Array<IDoctor>;
@@ -26,7 +26,6 @@ export const doctorsSlice = createSlice({
     },
   },
 });
-
 
 export const { setDoctors } = doctorsSlice.actions;
 export const selectDoctors = (state: any) => state.doctors;

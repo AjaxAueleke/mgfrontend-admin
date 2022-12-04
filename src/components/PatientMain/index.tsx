@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { IDoctor } from "../../pages/patient";
+import { IDoctor } from "../../pages/doctor";
 import DoctorCard from "../Card";
 import AppointmentModal from "../Modal";
 import SearchBox from "../SearchBox";

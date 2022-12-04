@@ -12,7 +12,7 @@ function MyApp({ Component, ...rest }: AppProps) {
       <ChakraProvider>
         {/* <TopBar /> */}
 
-        <Box maxWidth="container.xl" margin="auto">
+        <Box margin="auto">
           <Component {...pageProps} />
         </Box>
       </ChakraProvider>

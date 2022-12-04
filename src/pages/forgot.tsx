@@ -13,7 +13,6 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { IError } from "./signup";
 
 export default function ForgotPass() {
   const [email, setEmail] = useState<string>("");
@@ -27,16 +26,21 @@ export default function ForgotPass() {
   const handleCodeSubmit = async () => {
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:3000/api/auth", {
-        code: code,
-        email: email,
-        password,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/resetpassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code: code, email: email, password }),
+        }
+      );
       router.push("/login");
     } catch (err) {
       toast({
         title: "Error",
-        description: err.response.data.message,
+        description: err.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -48,9 +52,18 @@ export default function ForgotPass() {
   const handleEmailSubmit = async () => {
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:3000/api/auth/", {
-        email,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/mailresetcode/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+          }),
+        }
+      );
       setLoading(false);
       setCodeSend(true);
     } catch (err: any) {
@@ -149,32 +162,34 @@ interface ICodeInput {
 const CodeInput = (props: ICodeInput) => {
   const { code, password, onChangeCode, onChangePwd, onSubmit } = props;
   return (
-    <Box>
-      <Stack spacing={"8"} my="4">
-        <FormControl isRequired={true}>
-          <FormLabel>Code</FormLabel>
-          <Input
-            type="text"
-            placeholder="Enter code"
-            id="1"
-            value={code}
-            onChange={onChangeCode}
-          />
-        </FormControl>
-        <FormControl isRequired={true}>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            placeholder="Enter new password"
-            id="2"
-            value={password}
-            onChange={onChangePwd}
-          />
-        </FormControl>
-        <Button mx="auto" size="md" colorScheme={"teal"} onClick={onSubmit}>
-          Reset Password
-        </Button>
-      </Stack>
-    </Box>
+    <>
+      <Box>
+        <Stack spacing={"8"} my="4">
+          <FormControl isRequired={true}>
+            <FormLabel>Code</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter code"
+              id="1"
+              value={code}
+              onChange={onChangeCode}
+            />
+          </FormControl>
+          <FormControl isRequired={true}>
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              placeholder="Enter new password"
+              id="2"
+              value={password}
+              onChange={onChangePwd}
+            />
+          </FormControl>
+          <Button mx="auto" size="md" colorScheme={"teal"} onClick={onSubmit}>
+            Reset Password
+          </Button>
+        </Stack>
+      </Box>
+    </>
   );
 };

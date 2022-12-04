@@ -24,9 +24,8 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const Links = [
-  { text: "Find Doctors", link: "/patient" },
-  { text: "See Appointments", link: "/patient/appointment" },
-  { text: "Message", link: "/message" },
+ 
+  { text: "See Appointments", link: "/" },
 ];
 
 const NavLink = (props: { text: string; link: string }) => {
@@ -102,7 +101,7 @@ export default function PatientNav() {
               <MenuList borderRadius="md" border={`1px solid #e428f0`}>
                 <MenuItem
                   onClick={() => {
-                    router.push("/patient/profile");
+                    router.push("/doctor/profile");
                   }}
                 >
                   Edit Details

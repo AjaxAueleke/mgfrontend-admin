@@ -28,16 +28,16 @@ interface IError {
   phone?: string;
 }
 const Login: NextPage = () => {
-  const [email, setEmail] = useState<String>("");
-  const [password, setPassword] = useState<String>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<IError>({});
+  const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const router = useRouter();
   const toast = useToast();
   const submitHandler = async (e: any) => {
     console.log("RUNNING");
     e.preventDefault();
-    console.log(errors);
 
     if (email.trim() === "") {
       setErrors((prevState: IError) => ({
@@ -65,7 +65,6 @@ const Login: NextPage = () => {
       setErrors((prevState: IError) => ({
         ...prevState,
         password: "",
-        confirmPassword: "",
       }));
     }
 
@@ -78,15 +77,15 @@ const Login: NextPage = () => {
     if (Object.keys(errors).length === 0) {
       console.log("PUSHING");
       try {
-        const res = await fetch("http://65.2.20.95:3000/api/v1/users/login", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify({
-            email,
-            password,
+            email : email,
+            password : password,
           }),
         });
         const data = await res.json();
@@ -115,13 +114,13 @@ const Login: NextPage = () => {
             localStorage.setItem("token", data.token);
           }
           dispatch(setAuthState(true));
-          router.push("/patient");
+          router.push("/");
         }
       } catch (err) {
         console.log(err);
         toast({
           title: "An error occurred.",
-          description: "We were unable to create your account.",
+          description: "We were unable to log you in.",
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -165,7 +164,9 @@ const Login: NextPage = () => {
                 type="email"
                 placeholder="Enter your email"
                 id="2"
+                value={email}
                 onChange={(e) => {
+                  console.log(email)
                   setEmail(e.target.value);
                 }}
               />
@@ -190,7 +191,9 @@ const Login: NextPage = () => {
                 type="password"
                 placeholder="Enter your password"
                 id="4"
+                value={password || ""}
                 onChange={(e) => {
+                  console.log(password)
                   setPassword(e.target.value);
                 }}
               />

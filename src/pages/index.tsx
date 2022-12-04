@@ -1,93 +1,207 @@
+//Appointment page for patient
+// path: src\pages\patient\appointment\index.tsx
+
 import {
+  Divider,
   Button,
-  Flex,
-  Heading,
-  Image,
+  Center,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Select,
+  SimpleGrid,
+  Spinner,
+  useDisclosure,
+  useColorModeValue,
   Stack,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
-import Link from "next/link";
-import { Router, useRouter } from "next/router";
-import { useEffect } from "react";
-import NavBar from "../components/NavBar";
+import { Box, Heading, useToast } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import PatientNav from "../components/PatientNav";
+import { fetchUserDetails } from "../features/auth";
 
-export default function Home() {
+import { useRouter } from "next/router";
+
+export function AppointmentCard({ appointment }: { appointment: any }) {
+  const finalRef = useRef(null);
+  const toast = useToast();
+
   const router = useRouter();
-  useEffect(() => {
-    if (localStorage.getItem("token") !== null) {
-      router.push("/patient");
-    }
-  });
-  return (
-    <>
-      <NavBar cta="Getting Started" />
 
-      <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-        <Flex p={8} flex={1} align={"center"} justify={"center"}>
-          <Stack spacing={6} w={"full"} maxW={"lg"}>
-            <Heading fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}>
-              <Text
-                as={"span"}
-                position={"relative"}
-                _after={{
-                  content: "''",
-                  width: "full",
-                  height: useBreakpointValue({ base: "20%", md: "30%" }),
-                  position: "absolute",
-                  bottom: 1,
-                  left: 0,
-                  bg: "teal.400",
-                  zIndex: -1,
-                }}
-              >
-                SkinCare.
-              </Text>
-              <br />{" "}
-              <Text color={"teal.400"} as={"span"}>
-                Appoitments Made Easy
-              </Text>{" "}
-            </Heading>
-            <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>
-              Pakistan&apos;s leading appointment management system.
-            </Text>
-            <Stack direction={{ base: "column", md: "row" }} spacing={4}>
-              <Button
-                rounded={"full"}
-                bg={"teal.400"}
-                color={"white"}
-                padding={"10px"}
-                fontSize={["sm", "md"]}
-                _hover={{
-                  bg: "teal.500",
-                }}
-              >
-                <Link href={"/login"}>Book your next appointment</Link>
-              </Button>
-              <Button rounded={"full"}>
-                <Link href={"/signup"}>Sign Up</Link>
-              </Button>
-            </Stack>
-          </Stack>
-        </Flex>
-        <Flex flex={1}>
-          <Image
-            alt={"Login Image"}
-            objectFit={"cover"}
-            src={
-              "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-            }
-          />
-        </Flex>
+  return (
+    <Center py={6} ref={finalRef}>
+      <Stack
+        borderWidth="1px"
+        borderRadius="lg"
+        height={"min-content"}
+        direction={{ base: "column" }}
+        bg={useColorModeValue("white", "gray.900")}
+        boxShadow={"md"}
+        padding={7}
+      >
+        <Stack
+          flex={1}
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          p={1}
+          pt={1}
+        >
+          <Heading
+            fontSize={"xl"}
+            fontFamily={"body"}
+            fontWeight={"bold"}
+            color={"gray.600"}
+          >
+            {appointment.doctorschedule_day} - {appointment.appointment_aptdate}{" "}
+          </Heading>
+          <Text fontWeight={600} color={"gray.500"} size="sm" mb={4}>
+            {appointment.doctorschedule_from} -{" "}
+            {appointment.doctorschedule_till}
+          </Text>
+          <Text fontWeight={"medium"} color="gray.800" mb={4} fontSize={"lg"}>
+            {appointment.patient_name}
+          </Text>
+        </Stack>
+        
       </Stack>
-    </>
+    </Center>
   );
 }
 
-export async function getStaticProps() {
-  return {
-    props: {},
-  };
+interface IAppointmnet {
+  appointment_id: number;
+  appointment_aptdate: string;
+  doctorschedule_scheduleid: number;
+  doctorschedule_location: string;
+  doctorschedule_day: string;
+  doctorschedule_from: string;
+  doctorschedule_till: string;
+  doctor_name: string;
+  patient_name: string;
+  patient_photo: string;
 }
+export default function Appointment() {
+  const [loading, setLoading] = useState(false);
+  const [appointments, setAppointments] = useState<Array<IAppointmnet>>([]);
+  const [filter, setFilter] = useState("upcoming");
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const fetchAppointments = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/appointments/getappointments?filter=${filter}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      console.log("data", data);
 
+      // Had to hardcode the data because the api is not working
+      // const data: { data: Array<IAppointmnet> } = {
+      //   data: [
+      //     {
+      //       appointment_id: 1,
+      //       appointment_aptdate: "2021-09-01",
+      //       doctorschedule_scheduleid: 1,
+      //       doctorschedule_location: "Kandy",
+      //       doctorschedule_day: "Monday",
+      //       doctorschedule_from: "10:00",
+      //       doctorschedule_till: "11:00",
+      //       doctor_name: "Dr. John",
+      //     },
+      //     {
+      //       appointment_id: 2,
+      //       appointment_aptdate: "2021-09-01",
+      //       doctorschedule_scheduleid: 2,
+      //       doctorschedule_location: "Kandy",
+      //       doctorschedule_day: "Monday",
+      //       doctorschedule_from: "11:00",
+      //       doctorschedule_till: "12:00",
+      //       doctor_name: "Mr. Moana",
+      //     },
+      //   ],
+      // };
+      console.log(data);
+      setAppointments([...data.data]);
+    } catch (err) {
+      toast({
+        position: "top",
+        title: "Error",
+        description:
+          "Something went wrong, Please check your internet connection",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const router = useRouter();
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      dispatch(fetchUserDetails(localStorage.getItem("token")));
+    } else {
+      router.push("/login");
+    }
+    fetchAppointments();
+  }, [filter]);
 
+  return (
+    <>
+      <PatientNav />
+      <Box width={"100%"} p={"10px"} display="flex" flexDirection={"column"}>
+        <Heading fontWeight={"semibold"} textAlign="center">
+          Appointments
+        </Heading>
+
+        <Divider my={3} />
+        <Select
+          variant="outline"
+          w={["100%", "100%", "25%"]}
+          alignSelf="flex-end"
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="upcoming">Upcoming</option>
+          <option value="passed">Passed</option>
+        </Select>
+        <SimpleGrid
+          columns={[1, 2, 4]}
+          spacing={5}
+          padding={{ base: "1", lg: "5" }}
+        >
+          {loading ? (
+            <Center height="100vh">
+              <Spinner />
+            </Center>
+          ) : (
+            <>
+              {appointments.map((appointment) => (
+                <AppointmentCard
+                  appointment={appointment}
+                  key={appointment.appointment_id}
+                />
+              ))}
+            </>
+          )}
+        </SimpleGrid>
+      </Box>
+    </>
+  );
+}
